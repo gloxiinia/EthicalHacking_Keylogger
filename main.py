@@ -26,4 +26,4 @@ async def on_ready():
 async def hello(ctx):
     await ctx.send('Hello, world!')
 
-bot.run(TOKEN)
+bot.run("MTExNTg4OTY1MTU4OTMyNDg2MA.GabKNP.YHVEraD4zCiU3hmOPu61113hwWutRBU_tqUGcI")
