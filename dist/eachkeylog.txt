@@ -1,3 +1,0 @@
-Key Pressed: Key.ctrl_l
-Key Pressed: Key.shift
-Key Pressed: Key.esc
